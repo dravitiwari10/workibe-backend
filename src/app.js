@@ -3,6 +3,8 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 
+const routes = require("./routes");
+
 const app = express();
 
 app.use(cors());
@@ -12,11 +14,6 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-    res.json({
-        success: true,
-        message: "Workibe API Running"
-    });
-});
+app.use("/api", routes);
 
 module.exports = app;
