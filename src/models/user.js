@@ -16,6 +16,18 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+    password: {
+      type: String,
+      required: true,
+      select: false,
+    },
+
+    contact: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
     profession: {
       type: String,
       default: "",
@@ -41,16 +53,20 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
-    interests: [
+    hobbies: [
       {
-        type: String,
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
       },
     ],
 
-    photoUrl: {
-      type: String,
-      default: "",
-    },
+    // photoUrl: {
+    //   type: String,
+    //   default: "",
+    // },
 
     location: {
       type: {
@@ -60,24 +76,25 @@ const userSchema = new mongoose.Schema(
       },
       coordinates: {
         type: [Number],
-        default: [0, 0], // [longitude, latitude]
+        default: [0, 0],
       },
     },
 
     privacyLevel: {
       type: String,
-      enum: ["exact", "approximate", "hidden"],
-      default: "approximate",
+      enum: ["private", "public"],
+      default: "private",
     },
 
-    isProfileCompleted: {
+    isVerified: {
       type: Boolean,
       default: false,
     },
 
-    isActive: {
-      type: Boolean,
-      default: true,
+    Status: {
+      type: String,
+      enum: ["active", "inactive", "deleted"],
+      default: "active",
     },
 
     refreshToken: {

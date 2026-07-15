@@ -5,7 +5,7 @@ const User = require("../models/User");
  */
 const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-refreshToken");
+    const user = await User.findById(req.user.id);
 
     if (!user) {
       return res.status(404).json({
@@ -39,7 +39,7 @@ const updateProfile = async (req, res) => {
         new: true,
         runValidators: true,
       }
-    ).select("-refreshToken");
+    );
 
     return res.status(200).json({
       success: true,
@@ -59,7 +59,7 @@ const updateProfile = async (req, res) => {
  */
 const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select("-refreshToken");
+    const user = await User.findById(req.params.id);
 
     if (!user) {
       return res.status(404).json({
