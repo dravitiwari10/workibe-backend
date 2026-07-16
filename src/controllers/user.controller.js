@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const userService = require("../services/userService");
 
 /**
  * Get Logged-in User Profile
@@ -80,8 +81,26 @@ const getUserById = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await userService.getAllUsers();
+
+    res.status(200).json({
+      success: true,
+      message: "Users fetched successfully.",
+      data: users,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      message: err.message || "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   getProfile,
   updateProfile,
   getUserById,
+  getAllUsers,
 };

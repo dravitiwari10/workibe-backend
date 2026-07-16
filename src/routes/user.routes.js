@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const userRouter = Router();
+const { protect } = require("../middleware/authMiddleware");
 
 const userController = require('../controllers/user.controller');
 
@@ -10,6 +11,7 @@ const userController = require('../controllers/user.controller');
  * @access Private
  */
 userRouter.get("/me",  userController.getProfile);
+userRouter.get("/", protect,  userController.getAllUsers);
 
 /**
  * @route PUT /api/users/me
