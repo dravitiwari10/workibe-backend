@@ -4,6 +4,8 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const userRouter = require("./routes/user.routes");
 const authRouter = require("./routes/auth.routes")
+const activityRouter = require("./routes/activity.routes");
+const connectionRouter = require("./routes/connection.routes");
 
 const routes = require("./routes");
 
@@ -19,5 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", routes);
 app.use("/api/user", userRouter);
 app.use("/auth", authRouter)
+app.use("/api/activities", activityRouter);
+app.use("/api/connections", connectionRouter);
 
 module.exports = app;
