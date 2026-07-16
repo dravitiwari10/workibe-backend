@@ -20,7 +20,9 @@ const sendOtp = async (email, purpose = "verify_email") => {
 
   await sendOtpEmail(email, code, purpose, user.name);
 
-  return { message: "OTP sent to email" };
+  return {
+  email,
+};
 };
 
 // const verifyOtp = async (email, code, purpose = "verify_email") => {

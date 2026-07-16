@@ -46,8 +46,11 @@ const register = async (details) => {
 
   await otpService.sendOtp(email, "verify_email");
 
-  return { userId: user._id, message: "Account created. Please verify your email with the OTP sent." };
-};
+return {
+  userId: user._id,
+  email: user.email,
+  isVerified: user.isVerified,
+};};
 
 /**
  * Verify the signup OTP to activate the account.
@@ -62,11 +65,11 @@ const register = async (details) => {
 
 // };
 const verifyRegistration = async (email, otp) => {
-  console.log("Inside authService");
-
-  const result = await otpService.verifyOtp(email, otp, "verify_email");
-
-  console.log("OTP verified");
+  const result = await otpService.verifyOtp(
+    email,
+    otp,
+    "verify_email"
+  );
 
   return result;
 };
