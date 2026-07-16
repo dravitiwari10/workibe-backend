@@ -12,6 +12,7 @@ const userController = require('../controllers/user.controller');
  */
 userRouter.get("/me",  userController.getProfile);
 userRouter.get("/", protect,  userController.getAllUsers);
+userRouter.patch("/location", protect, userController.updateLocation);
 
 /**
  * @route PUT /api/users/me

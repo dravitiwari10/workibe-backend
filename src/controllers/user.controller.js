@@ -83,7 +83,11 @@ const getUserById = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await userService.getAllUsers(req.user.id);
+    const radiusKm = req.query.radius ? parseFloat(req.query.radius) : null;
+    const currentUser = await User.findById(req.user.id).select("location");
+    const currentUserCoords = currentUser?.location?.coordinates || [0, 0];
+
+    const users = await userService.getAllUsers(req.user.id, currentUserCoords, radiusKm);
 
     res.status(200).json({
       success: true,
@@ -98,9 +102,28 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const updateLocation = async (req, res) => {
+  try {
+    const { latitude, longitude } = req.body;
+    const user = await userService.updateLocation(req.user.id, latitude, longitude);
+
+    res.status(200).json({
+      success: true,
+      message: "Location updated successfully",
+      data: user,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      message: err.message || "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   getProfile,
   updateProfile,
   getUserById,
   getAllUsers,
+  updateLocation,
 };
