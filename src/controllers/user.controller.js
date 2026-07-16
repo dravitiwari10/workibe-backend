@@ -83,7 +83,7 @@ const getUserById = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await userService.getAllUsers();
+    const users = await userService.getAllUsers(req.user.id);
 
     res.status(200).json({
       success: true,

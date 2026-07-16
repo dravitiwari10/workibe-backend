@@ -3,9 +3,12 @@ const User = require("../models/User");
 /**
  * Get all registered users
  */
-const getAllUsers = async () => {
+const getAllUsers = async (currentUserId) => {
   const users = await User.find(
-    { Status: { $ne: "deleted" } },
+    {
+      Status: { $ne: "deleted" },
+      _id: { $ne: currentUserId },
+    },
     {
       password: 0,
       refreshToken: 0,
