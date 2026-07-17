@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { CATEGORY_KEYS } = require("../config/activityCategories");
 
 const activitySchema = new mongoose.Schema(
   {
@@ -13,8 +14,12 @@ const activitySchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["coffee", "startup", "fitness", "networking", "coding", "travel", "other"],
+      enum: CATEGORY_KEYS,
       required: true,
+    },
+    customCategoryLabel: {
+      type: String,
+      default: "",
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -28,8 +33,12 @@ const activitySchema = new mongoose.Schema(
         default: "Point",
       },
       coordinates: {
-        type: [Number], // [longitude, latitude]
+        type: [Number],
         default: [0, 0],
+      },
+      venueName: {
+        type: String,
+        default: "",
       },
       address: {
         type: String,
@@ -42,7 +51,7 @@ const activitySchema = new mongoose.Schema(
     },
     maxParticipants: {
       type: Number,
-      default: 0, // 0 = unlimited
+      default: 0,
     },
     participants: [
       {

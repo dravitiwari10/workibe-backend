@@ -16,6 +16,14 @@ activityRouter.post("/", protect, activityController.createActivity);
 activityRouter.get("/", protect, activityController.listActivities);
 
 /**
+ * @route GET /api/activities/categories
+ * @description Return the fixed category list (for dropdown/filter UI)
+ * NOTE: must be registered before /:id, or Express will treat
+ * "categories" as an :id param and this route will never be reached.
+ */
+activityRouter.get("/categories", protect, activityController.listCategories);
+
+/**
  * @route GET /api/activities/:id
  */
 activityRouter.get("/:id", protect, activityController.getActivityById);
