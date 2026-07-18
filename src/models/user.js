@@ -63,10 +63,10 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
-    // photoUrl: {
-    //   type: String,
-    //   default: "",
-    // },
+    photoUrl: {
+      type: String,
+      default: "",
+    },
 
     location: {
       type: {
