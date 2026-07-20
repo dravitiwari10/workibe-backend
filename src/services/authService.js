@@ -148,6 +148,12 @@ const logout = async (userId) => {
   return { message: "Logged out" };
 };
 
+const changePassword = async(currentPassword,newPassword) =>{
+  if(currentPassword != newPassword){
+    return {message:""}
+  }
+}
+
 module.exports = {
   register,
   verifyRegistration,

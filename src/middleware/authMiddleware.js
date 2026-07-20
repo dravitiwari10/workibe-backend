@@ -27,6 +27,7 @@ const protect = async (req, res, next) => {
     req.user = { id: user._id.toString(), email: user.email };
     next();
   } catch (err) {
+    console.log("protect error:", err.name, "-", err.message); 
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };

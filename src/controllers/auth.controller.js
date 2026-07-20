@@ -99,6 +99,15 @@ const resetPassword = async (req, res) => {
   }
 };
 
+
+//POST /auth/change-password {currentPassword,newPasssword}
+const changePassword = async(req,res) => {
+try{
+  const{currentPassword,newPasssword} = req.body;
+  const result = await auth.authService
+}
+}
+
 module.exports = {
   register,
   verifyRegistration,
