@@ -6,6 +6,8 @@ const userRouter = require("./routes/user.routes");
 const authRouter = require("./routes/auth.routes")
 const activityRouter = require("./routes/activity.routes");
 const connectionRouter = require("./routes/connection.routes");
+const reviewRouter = require("./routes/review.routes");
+const placeRouter = require("./routes/place.routes");
 
 const routes = require("./routes");
 
@@ -23,9 +25,6 @@ app.use("/api/user", userRouter);
 app.use("/auth", authRouter)
 app.use("/api/activities", activityRouter);
 app.use("/api/connections", connectionRouter);
-const reviewRouter = require("./routes/review.routes");
-const placeRouter = require("./routes/place.routes");
-
 app.use("/api/reviews", reviewRouter);
 app.use("/api/places", placeRouter);
 
