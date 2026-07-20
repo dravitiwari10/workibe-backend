@@ -235,11 +235,30 @@ const recordShare = async (reviewId) => {
   return { shareCount: review.shareCount };
 };
 
+/**
+ * Get all comments for a single review
+ */
+const getComments = async (reviewId) => {
+  const review = await Review.findById(reviewId)
+    .select("comments")
+    .populate("comments.user", "name photoUrl badge");
+
+  if (!review) {
+    const error = new Error("Review not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  // Most recent first (flip to reverse if you want oldest-first threading)
+  return [...review.comments].sort((a, b) => b.createdAt - a.createdAt);
+};
+
 module.exports = {
   createReview,
   getFeed,
   getReviewsForPlace,
   toggleLike,
   addComment,
+  getComments,
   recordShare,
 };

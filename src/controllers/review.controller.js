@@ -105,6 +105,21 @@ const addComment = async (req, res) => {
 };
 
 /**
+ * GET /api/reviews/:id/comments
+ */
+const getComments = async (req, res) => {
+  try {
+    const comments = await reviewService.getComments(req.params.id);
+    res.status(200).json({ success: true, data: comments });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      message: err.message || "Something went wrong",
+    });
+  }
+};
+
+/**
  * POST /api/reviews/:id/share
  */
 const recordShare = async (req, res) => {
@@ -126,5 +141,6 @@ module.exports = {
   getReviewsForPlace,
   toggleLike,
   addComment,
+  getComments,
   recordShare,
 };

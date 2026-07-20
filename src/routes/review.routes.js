@@ -34,7 +34,11 @@ reviewRouter.post("/:id/like", protect, reviewController.toggleLike);
  * @route POST /api/reviews/:id/comment
  */
 reviewRouter.post("/:id/comment", protect, reviewController.addComment);
-
+/**
+ * @route GET /api/reviews/:id/comments
+ * @description Get all comments for a review
+ */
+reviewRouter.get("/:id/comments", protect, reviewController.getComments);
 /**
  * @route POST /api/reviews/:id/share
  */
