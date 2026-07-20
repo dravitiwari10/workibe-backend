@@ -23,5 +23,10 @@ app.use("/api/user", userRouter);
 app.use("/auth", authRouter)
 app.use("/api/activities", activityRouter);
 app.use("/api/connections", connectionRouter);
+const reviewRouter = require("./routes/review.routes");
+const placeRouter = require("./routes/place.routes");
+
+app.use("/api/reviews", reviewRouter);
+app.use("/api/places", placeRouter);
 
 module.exports = app;
