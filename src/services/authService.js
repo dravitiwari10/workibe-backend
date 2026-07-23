@@ -27,7 +27,7 @@ const register = async (details) => {
 
   let user;
   if (existing) {
-    
+
     Object.assign(existing, { password: passwordHash, name, contact, profession, company, experience, city, bio });
     user = await existing.save();
   } else {
@@ -46,11 +46,12 @@ const register = async (details) => {
 
   await otpService.sendOtp(email, "verify_email");
 
-return {
-  userId: user._id,
-  email: user.email,
-  isVerified: user.isVerified,
-};};
+  return {
+    userId: user._id,
+    email: user.email,
+    isVerified: user.isVerified,
+  };
+};
 
 /**
  * Verify the signup OTP to activate the account.
@@ -148,6 +149,33 @@ const logout = async (userId) => {
   return { message: "Logged out" };
 };
 
+const changePassword = async (userId, currentPassword, newPassword) => {
+  if (!currentPassword || !newPassword) {
+    const error = new Error("Both currentPassword and newPassword are required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const user = await User.findById(userId).select("+password");
+  if (!user) {
+    const error = new Error("User not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    const error = new Error("Current password is incorrect");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  user.password = await bcrypt.hash(newPassword, 10);
+  await user.save();
+
+  return { message: "Password changed successfully" };
+};
+
 module.exports = {
   register,
   verifyRegistration,
@@ -155,4 +183,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   logout,
+  changePassword,
 };

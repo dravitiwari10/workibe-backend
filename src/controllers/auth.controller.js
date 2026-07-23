@@ -99,6 +99,20 @@ const resetPassword = async (req, res) => {
   }
 };
 
+
+//POST /auth/change-password {currentPassword,newPassword}
+const changePassword = async(req,res) => {
+   console.log("BODY RECEIVED:", req.body);
+try{
+  const{currentPassword,newPassword} = req.body;
+  
+  const result = await authService.changePassword(req.user.id,currentPassword,newPassword);
+  res.status(200).json(result);
+} catch (err) {
+    res.status(err.statusCode || 500).json({ message: err.message || "Something went wrong" });
+}
+}
+
 module.exports = {
   register,
   verifyRegistration,
@@ -106,4 +120,5 @@ module.exports = {
   logout,
   forgotPassword,
   resetPassword,
+  changePassword 
 };

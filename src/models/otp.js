@@ -16,7 +16,7 @@ const otpSchema = new mongoose.Schema(
 
     purpose: {
       type: String,
-      enum: ["verify_email", "forgot_password"],
+      enum: ["verify_email", "reset_password"],
       default: "verify_email",
       required: true,
     },
