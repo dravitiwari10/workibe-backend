@@ -14,9 +14,23 @@ const generateRefreshToken = (userId) => {
  * then sends an email-verification OTP.
  */
 const register = async (details) => {
-  const { email, password, name, contact, profession, company, experience, city, bio } = details;
+  const {
+    email,
+    password,
+    name,
+    contact,
+    profession,
+    company,
+    experience,
+    city,
+    bio,
+    latitude,
+    longitude,
+    hobbies,
+  } = details;
 
   const existing = await User.findOne({ email });
+
   if (existing && existing.isVerified) {
     const error = new Error("Email already registered");
     error.statusCode = 409;
@@ -25,22 +39,36 @@ const register = async (details) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  let user;
-  if (existing) {
+  const userData = {
+    password: passwordHash,
+    name,
+    contact,
+    profession,
+    company,
+    experience: Number(experience),
+    city,
+    bio,
 
-    Object.assign(existing, { password: passwordHash, name, contact, profession, company, experience, city, bio });
+    hobbies: hobbies || [],
+
+    location: {
+      type: "Point",
+      coordinates: [
+        Number(longitude),
+        Number(latitude),
+      ],
+    },
+  };
+
+  let user;
+
+  if (existing) {
+    Object.assign(existing, userData);
     user = await existing.save();
   } else {
     user = await User.create({
       email,
-      password: passwordHash,
-      name,
-      contact,
-      profession,
-      company,
-      experience,
-      city,
-      bio,
+      ...userData,
     });
   }
 
