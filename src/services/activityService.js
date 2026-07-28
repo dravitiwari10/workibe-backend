@@ -61,7 +61,7 @@ const createActivity = async (userId, details) => {
  * List activities — filterable by category, and optionally sorted by
  * distance from the requesting user if coordinates + radius are given.
  */
-const listActivities = async ({ category, search, userCoords, radiusKm, upcomingOnly = true }) => {
+const listActivities = async ({ category, search, userId, userCoords, radiusKm, upcomingOnly = true }) => {
   const hasValidOrigin =
     Array.isArray(userCoords) &&
     userCoords.length === 2 &&
@@ -98,8 +98,6 @@ const listActivities = async ({ category, search, userCoords, radiusKm, upcoming
     await Activity.populate(activities, { path: "createdBy", select: "name photoUrl" });
   }
 
-  // Shape response to match the card exactly:
-  // Avatar, Coffee Meetup, Host: Ravi, Today • 6PM, Blue Tokai, Sector 62, 4/6 Joined, 2km away, Join
   return activities.map((a) => ({
     _id: a._id,
     title: a.title,
@@ -115,8 +113,13 @@ const listActivities = async ({ category, search, userCoords, radiusKm, upcoming
     address: a.location?.address || "",
     joinedCount: a.participants?.length || 0,
     maxParticipants: a.maxParticipants || 0,
-    distanceInKm: a.distanceInKm ?? null, // null if no geo origin available
+    distanceInKm: a.distanceInKm ?? null,
     status: a.status,
+    // NEW — lets the frontend disable/hide the Join button correctly
+    joinedByMe: userId
+      ? a.participants?.some((p) => p.user.toString() === userId.toString())
+      : false,
+    isHostedByMe: userId ? a.createdBy?._id?.toString() === userId.toString() : false,
   }));
 };
 

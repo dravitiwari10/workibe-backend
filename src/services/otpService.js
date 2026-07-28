@@ -34,8 +34,21 @@ const sendOtp = async (email, purpose = "verify_email") => {
 // console.log("All OTP records for this email:", allForEmail);
 const verifyOtp = async (email, code, purpose = "verify_email") => {
   console.log("Inside verifyOtp");
-  console.log({ email, code, purpose });
+  console.log("----------------");
+  console.log("Email :", email);
+  console.log("Code  :", code);
+  console.log("Purpose:", purpose);
+  const all = await Otp.find({ email }).sort({ createdAt: -1 });
 
+console.log("All OTPs");
+  console.table(
+    all.map(o => ({
+      otp: o.otp,
+      purpose: o.purpose,
+      status: o.status,
+    }))
+  );
+  
   const record = await Otp.findOne({
     email,
     otp: code,

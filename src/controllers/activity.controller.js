@@ -38,6 +38,7 @@ const listActivities = async (req, res) => {
     const activities = await activityService.listActivities({
       category,
       search,
+      userId: req.user.id, // add this
       userCoords,
       radiusKm,
     });

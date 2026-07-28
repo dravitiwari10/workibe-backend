@@ -116,10 +116,12 @@ const login = async (email, password) => {
   }
 
   if (!user.isVerified) {
-    const error = new Error("Please verify your email before logging in");
-    error.statusCode = 403;
-    throw error;
-  }
+  const error = new Error("Please verify your email before logging in");
+  error.statusCode = 403;
+  error.code = "EMAIL_NOT_VERIFIED";
+  error.email = user.email;
+  throw error;
+}
 
   if (user.Status === "deleted") {
     const error = new Error("This account has been deleted");

@@ -25,6 +25,6 @@ userRouter.put("/me",  userController.updateProfile);
  * @description Get a user by ID
  * @access Private
  */
-userRouter.get("/:id",  userController.getUserById);
+userRouter.get("/:id",  protect, userController.getUserById);
 
 module.exports = userRouter;
