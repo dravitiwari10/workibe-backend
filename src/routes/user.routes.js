@@ -10,7 +10,8 @@ const userController = require('../controllers/user.controller');
  * @description Get logged-in user's profile
  * @access Private
  */
-userRouter.get("/me",  userController.getProfile);
+userRouter.get("/me", protect, userController.getProfile);
+userRouter.put("/me", protect, userController.updateProfile);
 userRouter.get("/", protect,  userController.getAllUsers);
 userRouter.patch("/location", protect, userController.updateLocation);
 /**
