@@ -96,9 +96,38 @@ const listPendingRequests = async (userId) => {
   return requests;
 };
 
+const cancelConnectionRequest = async (connectionId, currentUserId) => {
+  const connection = await Connection.findById(connectionId);
+
+  if (!connection) {
+    const error = new Error("Connection request not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  // Only the person who SENT the request can cancel it
+  if (connection.requester.toString() !== currentUserId.toString()) {
+    const error = new Error("You are not authorized to cancel this request");
+    error.statusCode = 403;
+    throw error;
+  }
+
+  if (connection.status !== "pending") {
+    const error = new Error("Only pending requests can be cancelled");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Delete the document so the unique index allows a future request
+  await connection.deleteOne();
+
+  return { message: "Connection request cancelled successfully" };
+};
+
 module.exports = {
   sendRequest,
   respondToRequest,
   listConnections,
   listPendingRequests,
+  cancelConnectionRequest
 };

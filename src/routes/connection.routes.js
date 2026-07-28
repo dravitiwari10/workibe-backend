@@ -30,5 +30,6 @@ connectionRouter.get("/", protect, connectionController.listConnections);
  * @description List pending requests received by the logged-in user
  */
 connectionRouter.get("/pending", protect, connectionController.listPendingRequests);
+connectionRouter.delete("/:id/cancel",protect,cancelConnectionRequest);
 
 module.exports = connectionRouter;

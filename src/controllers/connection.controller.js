@@ -95,6 +95,24 @@ const listPendingRequests = async (req, res) => {
   }
 };
 
+const cancelConnectionRequest = async (req, res) => {
+  try {
+    const result = await connectionService.cancelConnectionRequest(
+      req.params.id,
+      req.user.id
+    );
+    res.status(200).json({
+      success: true,
+      message: result.message,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      message: err.message || "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   sendRequest,
   acceptRequest,
