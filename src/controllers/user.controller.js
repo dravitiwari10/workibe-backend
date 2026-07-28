@@ -60,7 +60,7 @@ const updateProfile = async (req, res) => {
  */
 const getUserById = async (req, res) => {
   try {
-    const user = await userService.getUserDetails(req.params.id);
+    const user = await userService.getUserDetails(req.params.id, req.user.id);
     res.status(200).json({
       success: true,
       data: user,

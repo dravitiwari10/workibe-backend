@@ -165,9 +165,8 @@ const updateLocation = async (userId, latitude, longitude) => {
   return user;
 };
 
-const getUserDetails = async (userId) => {
+const getUserDetails = async (userId, currentUserId) => {
   const user = await User.findById(userId).select("-password -refreshToken -__v");
-
   if (!user) {
     const error = new Error("User not found");
     error.statusCode = 404;
@@ -175,24 +174,56 @@ const getUserDetails = async (userId) => {
   }
 
   const objectId = new mongoose.Types.ObjectId(userId);
+  const currentUserObjectId = new mongoose.Types.ObjectId(currentUserId);
 
-  const [connectionsCount, activitiesHostedCount, activitiesJoinedCount, upcomingActivities] =
-    await Promise.all([
-      Connection.countDocuments({
-        status: "accepted",
-        $or: [{ requester: objectId }, { recipient: objectId }],
-      }),
-      Activity.countDocuments({ createdBy: objectId }),
-      Activity.countDocuments({ "participants.user": objectId }),
-      Activity.find({
-        "participants.user": objectId,
-        status: { $in: ["upcoming", "ongoing"] },
-        scheduledAt: { $gte: new Date() },
-      })
-        .sort({ scheduledAt: 1 })
-        .limit(3)
-        .select("title category scheduledAt location.venueName location.address"),
-    ]);
+  const [
+    connectionsCount,
+    activitiesHostedCount,
+    activitiesJoinedCount,
+    upcomingActivities,
+    connection,
+  ] = await Promise.all([
+    Connection.countDocuments({
+      status: "accepted",
+      $or: [{ requester: objectId }, { recipient: objectId }],
+    }),
+    Activity.countDocuments({ createdBy: objectId }),
+    Activity.countDocuments({ "participants.user": objectId }),
+    Activity.find({
+      "participants.user": objectId,
+      status: { $in: ["upcoming", "ongoing"] },
+      scheduledAt: { $gte: new Date() },
+    })
+      .sort({ scheduledAt: 1 })
+      .limit(3)
+      .select("title category scheduledAt location.venueName location.address"),
+
+    // Connection between current user and this profile
+    Connection.findOne({
+      $or: [
+        { requester: currentUserObjectId, recipient: objectId },
+        { requester: objectId, recipient: currentUserObjectId },
+      ],
+    }).lean(),
+  ]);
+
+  // Determine connection status
+  let connectionStatus = "none";
+  let connectionId = null;
+
+  if (connection) {
+    connectionId = connection._id;
+    if (connection.status === "accepted") {
+      connectionStatus = "accepted";
+    } else if (connection.status === "rejected") {
+      connectionStatus = "rejected";
+    } else if (connection.status === "pending") {
+      connectionStatus =
+        connection.requester.toString() === currentUserId
+          ? "pending_sent"
+          : "pending_received";
+    }
+  }
 
   return {
     _id: user._id,
@@ -213,7 +244,7 @@ const getUserDetails = async (userId) => {
       activitiesHosted: activitiesHostedCount,
       activitiesJoined: activitiesJoinedCount,
     },
-    upcomingActivities: upcomingActivities.map(a => ({
+    upcomingActivities: upcomingActivities.map((a) => ({
       _id: a._id,
       title: a.title,
       category: a.category,
@@ -221,6 +252,9 @@ const getUserDetails = async (userId) => {
       venueName: a.location?.venueName || "",
       address: a.location?.address || "",
     })),
+    // NEW
+    connectionStatus,
+    connectionId,
   };
 };
 
