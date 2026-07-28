@@ -97,6 +97,7 @@ const listPendingRequests = async (userId) => {
 };
 
 const cancelConnectionRequest = async (connectionId, currentUserId) => {
+  // connectionId must be a string / ObjectId, NOT the req object
   const connection = await Connection.findById(connectionId);
 
   if (!connection) {
@@ -105,7 +106,6 @@ const cancelConnectionRequest = async (connectionId, currentUserId) => {
     throw error;
   }
 
-  // Only the person who SENT the request can cancel it
   if (connection.requester.toString() !== currentUserId.toString()) {
     const error = new Error("You are not authorized to cancel this request");
     error.statusCode = 403;
@@ -118,7 +118,6 @@ const cancelConnectionRequest = async (connectionId, currentUserId) => {
     throw error;
   }
 
-  // Delete the document so the unique index allows a future request
   await connection.deleteOne();
 
   return { message: "Connection request cancelled successfully" };

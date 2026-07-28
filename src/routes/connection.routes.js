@@ -2,6 +2,7 @@ const { Router } = require("express");
 const connectionRouter = Router();
 const { protect } = require("../middleware/authMiddleware");
 const connectionController = require("../controllers/connection.controller");
+const { cancelConnectionRequest } = require("../services/connectionService");
 
 /**
  * @route POST /api/connections/request/:userId
@@ -30,6 +31,6 @@ connectionRouter.get("/", protect, connectionController.listConnections);
  * @description List pending requests received by the logged-in user
  */
 connectionRouter.get("/pending", protect, connectionController.listPendingRequests);
-connectionRouter.delete("/:id/cancel",protect,cancelConnectionRequest);
+connectionRouter.delete("/:id/cancel",protect,connectionController.cancelConnectionRequest);
 
 module.exports = connectionRouter;

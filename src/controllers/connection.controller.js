@@ -98,15 +98,16 @@ const listPendingRequests = async (req, res) => {
 const cancelConnectionRequest = async (req, res) => {
   try {
     const result = await connectionService.cancelConnectionRequest(
-      req.params.id,
+      req.params.id,   // "6a6881817da90b3ea4c60919"
       req.user.id
     );
-    res.status(200).json({
+
+    return res.status(200).json({
       success: true,
       message: result.message,
     });
   } catch (err) {
-    res.status(err.statusCode || 500).json({
+    return res.status(err.statusCode || 500).json({
       success: false,
       message: err.message || "Something went wrong",
     });
@@ -119,4 +120,5 @@ module.exports = {
   rejectRequest,
   listConnections,
   listPendingRequests,
+  cancelConnectionRequest
 };
