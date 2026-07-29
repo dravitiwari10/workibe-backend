@@ -1,6 +1,6 @@
 const crypto = require("crypto");
-const Otp = require("../models/Otp");
-const User = require("../models/User");
+const Otp = require("../models/otp");
+const User = require("../models/user");
 const { sendOtpEmail } = require("../utils/email");
 
 const generateOtpCode = () => crypto.randomInt(100000, 999999).toString();

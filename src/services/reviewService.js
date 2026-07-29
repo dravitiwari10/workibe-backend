@@ -1,6 +1,6 @@
-const Review = require("../models/Review");
-const Place = require("../models/Place");
-const User = require("../models/User");
+const Review = require("../models/review");
+const Place = require("../models/place");
+const User = require("../models/user");
 const placeService = require("./placeService");
 
 /**

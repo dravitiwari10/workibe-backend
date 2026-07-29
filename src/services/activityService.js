@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Activity = require("../models/Activity");
+const Activity = require("../models/activity");
 const { CATEGORY_KEYS } = require("../config/activityCategories");
 
 /**

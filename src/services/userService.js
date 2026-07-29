@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const User = require("../models/User");
-const Connection = require("../models/Connection");
-const Activity = require("../models/Activity");
+const User = require("../models/user");
+const Connection = require("../models/connection");
+const Activity = require("../models/activity");
 
 /**
  * Get all registered users

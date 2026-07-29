@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const User = require("../models/user");
 const reviewService = require("../services/reviewService");
 const { SUGGESTED_HIGHLIGHTS } = require("../config/reviewHighlights");
 

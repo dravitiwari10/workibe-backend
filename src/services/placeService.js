@@ -1,5 +1,5 @@
-const Place = require("../models/Place");
-const User = require("../models/User");
+const Place = require("../models/place");
+const User = require("../models/user");
 
 /**
  * Find an existing place near given coords + name, or create a new one.

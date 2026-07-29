@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const User = require("../models/user");
 const activityService = require("../services/activityService");
 const { ACTIVITY_CATEGORIES } = require("../config/activityCategories");
 

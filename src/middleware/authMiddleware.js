@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require("../models/user");
 
 // Verifies the Bearer token (issued by generateRefreshToken) and attaches req.user
 const protect = async (req, res, next) => {
