@@ -72,7 +72,9 @@ const register = async (details) => {
     });
   }
 
-  await otpService.sendOtp(email, "verify_email");
+   otpService.sendOtp(email, "verify_email").catch(err => {
+  console.error("Failed to send OTP email:", err.message);
+});
 
   return {
     userId: user._id,
