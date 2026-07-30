@@ -1,6 +1,16 @@
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: Number(process.env.SMTP_PORT) === 465, 
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 const OTP_COPY = {
   verify_email: {
@@ -32,27 +42,12 @@ const sendOtpEmail = async (email, code, purpose = "verify_email", name = "") =>
     </div>
   `;
 
-  try {
-    // process.env.RESEND_FROM should be either the Resend test address
-    // (onboarding@resend.dev) or an address on a domain you've verified
-    // in the Resend dashboard, e.g. "workibe <noreply@yourdomain.com>"
-    const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM || "onboarding@resend.dev",
-      to: email,
-      subject: copy.subject,
-      html,
-    });
-
-    if (error) {
-      throw new Error(error.message || "Resend API returned an error");
-    }
-
-    console.log(`[email] OTP email sent to ${email} — id: ${data?.id}`);
-    return data;
-  } catch (err) {
-    console.error(`[email] Failed to send OTP email to ${email}:`, err.message);
-    throw err;
-  }
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM,
+    to: email,
+    subject: copy.subject,
+    html,
+  });
 };
 
 module.exports = { sendOtpEmail };

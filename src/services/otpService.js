@@ -3,8 +3,17 @@ const Otp = require("../models/otp");
 const User = require("../models/user");
 const { sendOtpEmail } = require("../utils/email");
 
-const generateOtpCode = () => crypto.randomInt(100000, 999999).toString();
 
+const USE_FIXED_OTP = process.env.DEV_FIXED_OTP === "true";
+const FIXED_OTP_CODE = "123123";
+
+const generateOtpCode = () => {
+  if (USE_FIXED_OTP) {
+    console.warn("[otpService] DEV_FIXED_OTP is enabled — using fixed test OTP. Do NOT use in production.");
+    return FIXED_OTP_CODE;
+  }
+  return crypto.randomInt(100000, 999999).toString();
+};
 const sendOtp = async (email, purpose = "verify_email") => {
   const user = await User.findOne({ email });
   if (!user) {
@@ -12,17 +21,23 @@ const sendOtp = async (email, purpose = "verify_email") => {
     error.statusCode = 404;
     throw error;
   }
-
+ 
   await Otp.updateMany({ email, purpose, status: "pending" }, { status: "expired" });
-
+ 
   const code = generateOtpCode();
   await Otp.create({ email, otp: code, purpose, status: "pending" });
-
-  await sendOtpEmail(email, code, purpose, user.name);
-
+ 
+  // Skip the actual email send while using a fixed test OTP, so
+  // testing isn't blocked by the domain-verification issue either.
+  if (USE_FIXED_OTP) {
+    console.log(`[otpService] Skipping real email send (DEV_FIXED_OTP mode). OTP for ${email}: ${code}`);
+  } else {
+    await sendOtpEmail(email, code, purpose, user.name);
+  }
+ 
   return {
-  email,
-};
+    email,
+  };
 };
 
 // const verifyOtp = async (email, code, purpose = "verify_email") => {
