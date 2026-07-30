@@ -1,15 +1,26 @@
 const nodemailer = require("nodemailer");
 
-
-
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT) || 587,
-  secure: Number(process.env.SMTP_PORT) === 465, 
+  secure: Number(process.env.SMTP_PORT) === 465,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  connectionTimeout: 10000, // fail fast if it can't connect within 10s
+  greetingTimeout: 10000,   // fail fast if SMTP server doesn't greet within 10s
+  socketTimeout: 15000,     // kill idle socket after 15s
+});
+
+// Verify the connection once on startup so config problems show up
+// immediately in your logs, instead of only on the first real send.
+transporter.verify((err, success) => {
+  if (err) {
+    console.error("[email] SMTP transporter verification FAILED:", err.message);
+  } else {
+    console.log("[email] SMTP transporter is ready to send messages");
+  }
 });
 
 const OTP_COPY = {
@@ -42,12 +53,19 @@ const sendOtpEmail = async (email, code, purpose = "verify_email", name = "") =>
     </div>
   `;
 
-  await transporter.sendMail({
-    from: process.env.SMTP_FROM,
-    to: email,
-    subject: copy.subject,
-    html,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_FROM,
+      to: email,
+      subject: copy.subject,
+      html,
+    });
+    console.log(`[email] OTP email sent to ${email} — messageId: ${info.messageId}`);
+    return info;
+  } catch (err) {
+    console.error(`[email] Failed to send OTP email to ${email}:`, err.message);
+    throw err;
+  }
 };
 
 module.exports = { sendOtpEmail };
