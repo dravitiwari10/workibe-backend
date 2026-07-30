@@ -11,6 +11,8 @@ const transporter = nodemailer.createTransport({
   connectionTimeout: 10000, // fail fast if it can't connect within 10s
   greetingTimeout: 10000,   // fail fast if SMTP server doesn't greet within 10s
   socketTimeout: 15000,     // kill idle socket after 15s
+  family: 4,                // force IPv4 — Render has no outbound IPv6 route,
+                             // so Gmail's IPv6 address causes ENETUNREACH otherwise
 });
 
 // Verify the connection once on startup so config problems show up
