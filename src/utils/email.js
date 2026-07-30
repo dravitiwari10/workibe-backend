@@ -1,30 +1,6 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-// Using Resend's SMTP relay instead of Gmail — same nodemailer code style,
-// but with a provider that has reliable IPv4 endpoints (Gmail's SMTP
-// resolves to IPv6 addresses that Render can't route outbound traffic to).
-const transporter = nodemailer.createTransport({
-  host: "smtp.resend.com",
-  port: 465,
-  secure: true, // 465 = implicit TLS
-  auth: {
-    user: "resend", // literally the string "resend" — not your email
-    pass: process.env.RESEND_API_KEY, // your Resend API key, e.g. re_xxxxx
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 15000,
-});
-
-// Verify the connection once on startup so config problems show up
-// immediately in your logs, instead of only on the first real send.
-transporter.verify((err, success) => {
-  if (err) {
-    console.error("[email] SMTP transporter verification FAILED:", err.message);
-  } else {
-    console.log("[email] SMTP transporter is ready to send messages");
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const OTP_COPY = {
   verify_email: {
@@ -57,17 +33,22 @@ const sendOtpEmail = async (email, code, purpose = "verify_email", name = "") =>
   `;
 
   try {
-    // process.env.SMTP_FROM should be either the Resend test address
+    // process.env.RESEND_FROM should be either the Resend test address
     // (onboarding@resend.dev) or an address on a domain you've verified
     // in the Resend dashboard, e.g. "workibe <noreply@yourdomain.com>"
-    const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || "onboarding@resend.dev",
+    const { data, error } = await resend.emails.send({
+      from: process.env.RESEND_FROM || "onboarding@resend.dev",
       to: email,
       subject: copy.subject,
       html,
     });
-    console.log(`[email] OTP email sent to ${email} — messageId: ${info.messageId}`);
-    return info;
+
+    if (error) {
+      throw new Error(error.message || "Resend API returned an error");
+    }
+
+    console.log(`[email] OTP email sent to ${email} — id: ${data?.id}`);
+    return data;
   } catch (err) {
     console.error(`[email] Failed to send OTP email to ${email}:`, err.message);
     throw err;
