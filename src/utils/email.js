@@ -1,18 +1,19 @@
 const nodemailer = require("nodemailer");
 
+// Using Resend's SMTP relay instead of Gmail — same nodemailer code style,
+// but with a provider that has reliable IPv4 endpoints (Gmail's SMTP
+// resolves to IPv6 addresses that Render can't route outbound traffic to).
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: Number(process.env.SMTP_PORT) === 465,
+  host: "smtp.resend.com",
+  port: 465,
+  secure: true, // 465 = implicit TLS
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: "resend", // literally the string "resend" — not your email
+    pass: process.env.RESEND_API_KEY, // your Resend API key, e.g. re_xxxxx
   },
-  connectionTimeout: 10000, // fail fast if it can't connect within 10s
-  greetingTimeout: 10000,   // fail fast if SMTP server doesn't greet within 10s
-  socketTimeout: 15000,     // kill idle socket after 15s
-  family: 4,                // force IPv4 — Render has no outbound IPv6 route,
-  // so Gmail's IPv6 address causes ENETUNREACH otherwise
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 15000,
 });
 
 // Verify the connection once on startup so config problems show up
@@ -56,8 +57,11 @@ const sendOtpEmail = async (email, code, purpose = "verify_email", name = "") =>
   `;
 
   try {
+    // process.env.SMTP_FROM should be either the Resend test address
+    // (onboarding@resend.dev) or an address on a domain you've verified
+    // in the Resend dashboard, e.g. "workibe <noreply@yourdomain.com>"
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: process.env.SMTP_FROM || "onboarding@resend.dev",
       to: email,
       subject: copy.subject,
       html,
